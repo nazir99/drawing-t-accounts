@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WO500 Cost Flow</title>
+<style>
+  :root { --bg:#ffffff; --fg:#1a1a1a; --muted:#555; --rule:#444; --shade:#f0f0f0; --warn-bg:#fff4e5; --warn-bd:#c77700; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg:#16181b; --fg:#e8e8e8; --muted:#a8a8a8; --rule:#9a9a9a; --shade:#2a2d31; --warn-bg:#3a2a12; --warn-bd:#e0a040; }
+  }
+  :root[data-theme="dark"] { --bg:#16181b; --fg:#e8e8e8; --muted:#a8a8a8; --rule:#9a9a9a; --shade:#2a2d31; --warn-bg:#3a2a12; --warn-bd:#e0a040; }
+  body { background:var(--bg); color:var(--fg); font:14px/1.45 Arial, sans-serif; margin:0; padding:24px 16px; }
+  main { max-width:960px; margin:0 auto; }
+  h1 { font-size:20px; margin:0 0 12px; }
+  h2 { font-size:16px; margin:28px 0 8px; }
+  .answer { background:var(--warn-bg); border-left:4px solid var(--warn-bd); padding:10px 14px; margin-bottom:8px; }
+  .answer p { margin:6px 0; }
+  .answer ul { margin:6px 0; padding-left:20px; }
+  .note { color:var(--muted); font-size:13px; margin:4px 0 0; }
+  .flag { color:var(--warn-bd); font-weight:bold; font-size:13px; margin:4px 0 0; }
+  .t-title { font-weight:bold; margin:18px 0 4px; }
+  .scroll { overflow-x:auto; }
+  table.t-acct { border-collapse:collapse; width:100%; min-width:620px; font:12px Arial, sans-serif; }
+  table.t-acct th.side { background:var(--shade); text-align:center; }
+  table.t-acct thead tr:nth-child(2) th { text-align:left; border-bottom:1px solid var(--rule); }
+  table.t-acct td, table.t-acct th { padding:2px 6px; }
+  table.t-acct .r { text-align:right !important; white-space:nowrap; }
+  table.t-acct td:nth-child(3), table.t-acct thead tr:nth-child(2) th:nth-child(3),
+  table.t-acct th.side:first-child { border-right:1px solid var(--rule); }
+  table.t-acct tr.foot td { border-top:1px solid var(--rule); }
+  table.je { border-collapse:collapse; font:12px Arial, sans-serif; min-width:420px; }
+  table.je th, table.je td { padding:3px 8px; }
+  table.je thead th { text-align:left; border-bottom:1px solid var(--rule); background:var(--shade); }
+  table.je .r { text-align:right; }
+  table.je tr.tot td { border-top:1px solid var(--rule); font-weight:bold; }
+</style>
+</head>
+<body>
+<main>
+<h1>Work order WO500: how cost moved through the GL</h1>
+
+<div class="answer">
+  <p><b>Yes, something is wrong. WIP for WO500 is left with a 50.00 credit balance, which is abnormal: WIP is an asset and should end at zero for a finished order.</b></p>
+  <ul>
+    <li><b>Completion relieved more than was in WIP.</b> On 5 Sep, WOC412 moved 1,600.00 out of WIP into Finished Goods, but only 1,500.00 had gone in by then (1,200.00 material plus 300.00 labor). WIP went 100.00 negative.</li>
+    <li><b>Material was issued after the build.</b> WOI882 issued another 50.00 of material on 6 Sep, a day after completion. It brought WIP back only to a 50.00 credit.</li>
+    <li><b>Finished Goods is overstated by 50.00.</b> Total cost that went into the order is 1,550.00; Finished Goods received 1,600.00.</li>
+    <li><b>The order has not been closed.</b> There is no close entry, so the 50.00 has not been cleared to a variance account.</li>
+    <li><b>Check WOC411.</b> The 4 Sep labor absorption memo does not name WO500 and the completion posted no Finished Goods line. Confirm it belongs to this order.</li>
+  </ul>
+  <p>Suggested next step: confirm the completion cost on WOC412 (1,600.00 for 100 units, 16.00 each) against the actual 15.50 each, then close the order so the 50.00 goes to variance.</p>
+</div>
+
+<h2>1. The account in question</h2>
+<div class="t-title">12302 Work-In-Process (Issued), WO500</div>
+<div class="scroll">
+<table class="t-acct">
+  <thead>
+    <tr><th colspan="3" class="side">Debit</th><th colspan="3" class="side">Credit</th></tr>
+    <tr><th>Date</th><th>Description</th><th class="r">Amount</th><th>Date</th><th>Description</th><th class="r">Amount</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>3 Sep 2026</td><td>WOI881 Material issued to the order</td><td class="r">1,200.00</td><td></td><td></td><td></td></tr>
+    <tr><td>4 Sep 2026</td><td>WOC411 Labor absorbed</td><td class="r">300.00</td><td></td><td></td><td></td></tr>
+    <tr><td></td><td></td><td></td><td>5 Sep 2026</td><td>WOC412 Assembly completed, 100 units</td><td class="r">1,600.00</td></tr>
+    <tr><td>6 Sep 2026</td><td>WOI882 Material issued after completion</td><td class="r">50.00</td><td></td><td></td><td></td></tr>
+    <tr class="foot"><td></td><td></td><td></td><td></td><td><b>Left in WIP</b></td><td class="r"><b>50.00</b></td></tr>
+  </tbody>
+</table>
+</div>
+<p class="flag">Abnormal balance: WIP (an asset) has a 50.00 credit for WO500. A work order's WIP should end at zero.</p>
+
+<h2>2. The key entry</h2>
+<p class="note">No close entry exists, so this is the entry that moved the most out of WIP: WOC412, assembly completed, 5 Sep 2026.</p>
+<div class="scroll">
+<table class="je">
+  <thead><tr><th>Account</th><th class="r">Debit</th><th class="r">Credit</th></tr></thead>
+  <tbody>
+    <tr><td>12200 Finished Goods</td><td class="r">1,600.00</td><td></td></tr>
+    <tr><td>12302 Work-In-Process (Issued)</td><td></td><td class="r">1,600.00</td></tr>
+    <tr class="tot"><td>Total</td><td class="r">1,600.00</td><td class="r">1,600.00</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>3. Where the other side went</h2>
+
+<div class="t-title">12200 Finished Goods, WO500</div>
+<div class="scroll">
+<table class="t-acct">
+  <thead>
+    <tr><th colspan="3" class="side">Debit</th><th colspan="3" class="side">Credit</th></tr>
+    <tr><th>Date</th><th>Description</th><th class="r">Amount</th><th>Date</th><th>Description</th><th class="r">Amount</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>5 Sep 2026</td><td>WOC412 Assembly completed, 100 units</td><td class="r">1,600.00</td><td></td><td></td><td></td></tr>
+    <tr class="foot"><td></td><td><b>Net for WO500</b></td><td class="r"><b>1,600.00</b></td><td></td><td></td><td></td></tr>
+  </tbody>
+</table>
+</div>
+<p class="note">Movement for this order only. 50.00 more than the order actually cost (1,550.00).</p>
+
+<div class="t-title">12100 Raw Materials, WO500</div>
+<div class="scroll">
+<table class="t-acct">
+  <thead>
+    <tr><th colspan="3" class="side">Debit</th><th colspan="3" class="side">Credit</th></tr>
+    <tr><th>Date</th><th>Description</th><th class="r">Amount</th><th>Date</th><th>Description</th><th class="r">Amount</th></tr>
+  </thead>
+  <tbody>
+    <tr><td></td><td></td><td></td><td>3 Sep 2026</td><td>WOI881 Material issued to the order</td><td class="r">1,200.00</td></tr>
+    <tr><td></td><td></td><td></td><td>6 Sep 2026</td><td>WOI882 Material issued after completion</td><td class="r">50.00</td></tr>
+    <tr class="foot"><td></td><td></td><td></td><td></td><td><b>Net for WO500</b></td><td class="r"><b>1,250.00</b></td></tr>
+  </tbody>
+</table>
+</div>
+<p class="note">Movement for this order only. A credit is normal here: material left the account.</p>
+
+<div class="t-title">50410 Labor Absorption, WO500</div>
+<div class="scroll">
+<table class="t-acct">
+  <thead>
+    <tr><th colspan="3" class="side">Debit</th><th colspan="3" class="side">Credit</th></tr>
+    <tr><th>Date</th><th>Description</th><th class="r">Amount</th><th>Date</th><th>Description</th><th class="r">Amount</th></tr>
+  </thead>
+  <tbody>
+    <tr><td></td><td></td><td></td><td>4 Sep 2026</td><td>WOC411 Labor absorbed</td><td class="r">300.00</td></tr>
+    <tr class="foot"><td></td><td></td><td></td><td></td><td><b>Net for WO500</b></td><td class="r"><b>300.00</b></td></tr>
+  </tbody>
+</table>
+</div>
+<p class="note">Movement for this order only. Absorption accounts carry a credit balance because they offset labor moved into inventory.</p>
+
+</main>
+</body>
+</html>

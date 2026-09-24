@@ -1,0 +1,9 @@
+trandate,tranid,recordtype,line,acctnumber,acctname,accttype,debit,credit,memo
+2026-09-05,WOC412,WorkOrdCompl,1,12200,Finished Goods,OthCurrAsset,1600.00,,
+2026-09-05,WOC412,WorkOrdCompl,2,12302,Work-In-Process (Issued),OthCurrAsset,,1600.00,WO500 asm build qty 100
+2026-09-03,WOI881,WorkOrdIss,1,12302,Work-In-Process (Issued),OthCurrAsset,1200.00,,WO500 comp issue
+2026-09-03,WOI881,WorkOrdIss,2,12100,Raw Materials,OthCurrAsset,,1200.00,
+2026-09-04,WOC411,WorkOrdCompl,1,12302,Work-In-Process (Issued),OthCurrAsset,300.00,,routing labor absorb
+2026-09-04,WOC411,WorkOrdCompl,2,50410,Labor Absorption,COGS,,300.00,
+2026-09-06,WOI882,WorkOrdIss,1,12302,Work-In-Process (Issued),OthCurrAsset,50.00,,WO500 comp issue late
+2026-09-06,WOI882,WorkOrdIss,2,12100,Raw Materials,OthCurrAsset,,50.00,
