@@ -1,19 +1,21 @@
 # drawing-t-accounts
 
-A Claude Code skill that draws general ledger activity as textbook T accounts, the way an accountant or auditor expects to read them. It works in any medium: an HTML page, a NetSuite Suitelet, Word, Excel, PDF or markdown.
+Instructions that teach an AI model to draw general ledger activity as textbook T accounts, the way an accountant or auditor expects to read them. It works in any medium: an HTML page, a NetSuite Suitelet, Word, Excel, PDF or markdown.
+
+`SKILL.md` is plain markdown with no code and no dependencies, so it works with any LLM. It uses the Agent Skills format (a short name and description header, then the instructions), which some tools load automatically, but any model can follow it if you give it the file.
 
 It was built for NetSuite cost accounting (work orders, WIP, inventory, absorption), but the rules apply to any ledger.
 
 ## Why
 
-Asked to "show this as T accounts", an AI agent usually gets the accounting right and the picture wrong. The usual problems:
+Asked to "show this as T accounts", an AI model usually gets the accounting right and the picture wrong. The usual problems:
 
 - Debits and credits are stacked as two separate lists, so a 5 Sep credit sits next to a 3 Sep debit and the timeline is lost.
 - Balances show up as signed numbers or as "Ending balance (Cr)" instead of sitting on the side they fall.
 - Descriptions are copied from system memos ("WO500 asm build qty 100") instead of plain words.
 - A filtered T (one work order's slice of Raw Materials) gets called "abnormal" because it shows a credit.
 
-This skill fixes those problems and gives the agent a normal-balance reference for every NetSuite account type.
+This skill fixes those problems and gives the model a normal-balance reference for every NetSuite account type.
 
 ## What the skill covers
 
@@ -37,36 +39,35 @@ This skill fixes those problems and gives the agent a normal-balance reference f
 
 ## Install
 
-Claude Code loads personal skills from `~/.claude/skills/`.
+**Any LLM (ChatGPT, Gemini, Claude.ai, a local model, your own app):** paste the contents of `SKILL.md` into the system prompt, custom instructions or project instructions, or attach it as a file and say "follow this when drawing T accounts".
 
-```bash
-git clone https://github.com/nazir99/drawing-t-accounts.git ~/.claude/skills/drawing-t-accounts
-```
+**Tools that load skills from a folder:** clone the repo into the tool's skills directory. The folder name must match the skill name.
 
-To update later:
+| Tool | Command |
+|---|---|
+| Claude Code | `git clone https://github.com/nazir99/drawing-t-accounts.git ~/.claude/skills/drawing-t-accounts` |
+| OpenAI Codex CLI | `git clone https://github.com/nazir99/drawing-t-accounts.git ~/.codex/skills/drawing-t-accounts` |
 
-```bash
-git -C ~/.claude/skills/drawing-t-accounts pull
-```
+To update a clone later, run `git pull` inside the folder.
 
-For a single project instead of your whole machine, clone it into `<project>/.claude/skills/drawing-t-accounts`.
+**Coding assistants with rules files (Cursor, Copilot, Windsurf and similar):** copy `SKILL.md` into that tool's project rules or instructions file.
 
 ## Use
 
-You don't need to name it. Claude picks it up when a request matches, for example:
+In tools that load skills, you don't need to name it: the model picks it up when a request matches. Otherwise, mention it once. Example requests:
 
 - "Show me how cost flowed through the GL for WO500 as T accounts."
 - "Explain why this WIP balance isn't zero."
 - "Add a GL impact tab to this Suitelet, drawn as T accounts."
 - "Build a Word exhibit for the auditors showing the close entry."
 
-You can also ask for it directly: "use the drawing-t-accounts skill".
+
 
 ## Example
 
 `examples/` holds a small test case: eight GL lines for a work order, `wo500-gl.csv`. The rows are out of date order, the memos are in system shorthand, the WIP ends 50.00 below zero, and a labor absorption account (COGS type) carries a credit balance.
 
-`examples/wo500-t-accounts.html` is what Claude produced from that file with the skill loaded. Open it in a browser. It shows:
+`examples/wo500-t-accounts.html` is what a model produced from that file with the skill loaded. Open it in a browser. It shows:
 
 - The finding first: WIP is 50.00 below zero because the completion took out more than went in.
 - The WIP T, with "Left in WIP 50.00" on the Credit side.
@@ -75,13 +76,13 @@ You can also ask for it directly: "use the drawing-t-accounts skill".
 
 ## How it was tested
 
-The same request and data were given to a fresh agent twice: once without the skill (baseline) and once with it. Without the skill, the agent drew debits and credits as separate stacked columns and showed a signed ending balance. With the skill, it followed the layout. The gaps that run surfaced were fixed, such as filtered Ts and absorption accounts, and a second run confirmed the fixes.
+The same request and data were given to a fresh model twice: once without the skill (baseline) and once with it. Without the skill, the model drew debits and credits as separate stacked columns and showed a signed ending balance. With the skill, it followed the layout. The gaps that run surfaced were fixed, such as filtered Ts and absorption accounts, and a second run confirmed the fixes.
 
 ## Files
 
 | File | Purpose |
 |---|---|
-| `SKILL.md` | The skill. This is the only file Claude needs. |
+| `SKILL.md` | The skill. This is the only file a model needs. |
 | `examples/wo500-gl.csv` | Sample GL lines used for testing |
 | `examples/wo500-t-accounts.html` | Output produced with the skill |
 | `LICENSE` | MIT |
