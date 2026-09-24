@@ -1,5 +1,7 @@
 # drawing-t-accounts
 
+Part of [software-factory](https://github.com/nazir99/software-factory): a supporting skill.
+
 Instructions that teach an AI model to draw general ledger activity as textbook T accounts, the way an accountant or auditor expects to read them. It works in any medium: an HTML page, a NetSuite Suitelet, Word, Excel, PDF or markdown.
 
 `SKILL.md` is plain markdown with no code and no dependencies, so it works with any LLM. It uses the Agent Skills format (a short name and description header, then the instructions), which some tools load automatically, but any model can follow it if you give it the file.
